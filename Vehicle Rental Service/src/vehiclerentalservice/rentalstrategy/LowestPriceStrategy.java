@@ -12,11 +12,7 @@ import java.util.Map;
 public class LowestPriceStrategy implements RentalStrategy {
 
     @Override
-    public Booking findVehicle(
-            Map<String, Branch> branches,
-            VehicleType vehicleType,
-            LocalDateTime startTime,
-            LocalDateTime endTime) {
+    public Booking findVehicle(Map<String, Branch> branches, VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
 
         Branch cheapestBranch = null;
         Vehicle selectedVehicle = null;
@@ -24,11 +20,7 @@ public class LowestPriceStrategy implements RentalStrategy {
 
         for (Branch branch : branches.values()) {
 
-            Vehicle vehicle = branch.findAvailableVehicle(
-                    vehicleType,
-                    startTime,
-                    endTime
-            );
+            Vehicle vehicle = branch.findAvailableVehicle(vehicleType, startTime, endTime);
 
             if (vehicle == null) {
                 continue;
@@ -44,22 +36,13 @@ public class LowestPriceStrategy implements RentalStrategy {
         }
 
         if (selectedVehicle == null) {
-            throw new IllegalStateException(
-                    "No vehicle available for requested time"
-            );
+            throw new IllegalStateException("No vehicle available for requested time");
         }
 
         long hours = Duration.between(startTime, endTime).toHours();
         double totalPrice = cheapestPrice * hours;
 
-        Booking booking = new Booking(
-                cheapestBranch.getBranchId(),
-                selectedVehicle,
-                totalPrice,
-                startTime,
-                endTime
-        );
-
+        Booking booking = new Booking(cheapestBranch.getBranchId(), selectedVehicle, totalPrice, startTime, endTime);
         cheapestBranch.addBooking(booking);
 
         return booking;

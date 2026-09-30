@@ -9,10 +9,5 @@ import java.util.Map;
 
 public interface RentalStrategy {
 
-    Booking findVehicle(
-            Map<String, Branch> branches,
-            VehicleType vehicleType,
-            LocalDateTime startTime,
-            LocalDateTime endTime
-    );
+    Booking findVehicle(Map<String, Branch> branches, VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime);
 }

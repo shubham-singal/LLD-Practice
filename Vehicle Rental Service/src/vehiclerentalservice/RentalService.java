@@ -20,7 +20,7 @@ public class RentalService {
     }
 
     public void addBranch(String branchName) {
-        if(branchName == null || branchName.isEmpty()) {
+        if(branchName == null || branchName.isBlank()) {
             throw new IllegalArgumentException("Please provide a branch name");
         }
 
@@ -30,6 +30,28 @@ public class RentalService {
         }
         Branch br = new Branch(branchName);
         branches.put(branchName, br);
+    }
+
+
+    public void addVehicle(String vehicleId, VehicleType vehicleType, String branchName) {
+
+        if(branchName == null || branchName.isEmpty()) {
+            throw new IllegalArgumentException("Please provide a branch name");
+        }
+
+        if(vehicleId == null || vehicleId.isBlank()) {
+            throw new IllegalArgumentException("Please provide valid vehicle details");
+        }
+
+        branchName = branchName.trim().toLowerCase();
+
+        Branch branch = branches.get(branchName);
+
+        if (branch == null) {
+            throw new BranchNotFoundException(branchName);
+        }
+
+        branch.addVehicle(new Vehicle(vehicleId, vehicleType));
     }
 
     public void allocatePrice(String branchName, VehicleType vehicleType, double price) {
@@ -45,26 +67,6 @@ public class RentalService {
         }
 
         branches.get(branchName).setPrice(vehicleType, price);
-    }
-
-    public void addVehicle(
-            String vehicleId,
-            VehicleType vehicleType,
-            String branchName) {
-
-        if(branchName == null) {
-            throw new IllegalArgumentException("Branch Name cannot be null");
-        }
-
-        branchName = branchName.trim().toLowerCase();
-
-        Branch branch = branches.get(branchName);
-
-        if (branch == null) {
-            throw new BranchNotFoundException(branchName);
-        }
-
-        branch.addVehicle(new Vehicle(vehicleId, vehicleType));
     }
 
     public Booking bookVehicle(VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
@@ -89,4 +91,6 @@ public class RentalService {
 
         this.strategy = strategy;
     }
+
+    //TODO: Refactor branch validation: P4
 }

@@ -1,5 +1,7 @@
 package vehiclerentalservice;
 
+import vehiclerentalservice.exceptions.VehicleNotAvailableException;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,42 +10,46 @@ import java.util.Map;
 
 public class Branch {
 
-    static int count = 0;
+    private static int count = 0;
 
     private final int branchId;
     private String branchName;
     private List<Vehicle> fleet;
     private final Map<String, List<Booking>> bookingsByVehicle;
-    private final Map<VehicleType, Double> price;
+    private final Map<VehicleType, Double> prices;
 
     public Branch(String branchName) {
         this.branchId = ++Branch.count;
         this.branchName = branchName;
         fleet = new ArrayList<>();
         bookingsByVehicle = new HashMap<>();
-        price = new HashMap<>();
+        prices = new HashMap<>();
     }
 
     public Double getPrice(VehicleType vehicleType) {
-        if(price.get(vehicleType) == null) {
+        if(prices.get(vehicleType) == null) {
             throw new IllegalArgumentException("Vehicle Type doesn't exist");
         }
-        return price.get(vehicleType);
+        return prices.get(vehicleType);
     }
 
 
     public void setPrice(VehicleType vehicleType, double price) {
-        this.price.put(vehicleType, price);
+        if(!prices.containsKey(vehicleType)) {
+            throw new IllegalArgumentException("Vehicle Type does not exists");
+        }
+        prices.put(vehicleType, price);
     }
 
     public void addVehicle(Vehicle vehicle) {
+        if(vehicle == null || vehicle.getLicenseNum() == null || vehicle.getLicenseNum().isBlank()) {
+            throw new IllegalArgumentException("Please provide valid Vehicle");
+        }
+        //TODO: What if the vehicle type doesn't exist? How should we handle that?
         fleet.add(vehicle);
     }
 
-    public Vehicle findAvailableVehicle(
-            VehicleType vehicleType,
-            LocalDateTime startTime,
-            LocalDateTime endTime) {
+    public Vehicle findAvailableVehicle(VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
 
         for (Vehicle vehicle : fleet) {
 
@@ -56,27 +62,15 @@ public class Branch {
             }
         }
 
-        return null;
+        throw new VehicleNotAvailableException("Currently no Vehicle of type " + vehicleType + " are available during provided time.");
     }
 
-    private boolean isVehicleAvailable(
-            Vehicle vehicle,
-            LocalDateTime startTime,
-            LocalDateTime endTime) {
+    private boolean isVehicleAvailable(Vehicle vehicle, LocalDateTime startTime, LocalDateTime endTime) {
 
-        List<Booking> vehicleBookings =
-                bookingsByVehicle.getOrDefault(
-                        vehicle.getLicenseNum(),
-                        List.of()
-                );
+        List<Booking> vehicleBookings = bookingsByVehicle.getOrDefault(vehicle.getLicenseNum(), List.of());
 
         for (Booking booking : vehicleBookings) {
-
-            boolean overlaps =
-                    startTime.isBefore(booking.getEndTime())
-                            && endTime.isAfter(booking.getStartTime());
-
-            if (overlaps) {
+            if(startTime.isBefore(booking.getEndTime()) && endTime.isAfter(booking.getStartTime())) { //check if overlaps
                 return false;
             }
         }

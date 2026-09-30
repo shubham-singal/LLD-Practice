@@ -1,6 +1,5 @@
 package vehiclerentalservice;
 
-import vehiclerentalservice.exceptions.VehicleNotAvailableException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public class Branch {
         if(vehicle == null || vehicle.getLicenseNum() == null || vehicle.getLicenseNum().isBlank()) {
             throw new IllegalArgumentException("Please provide valid Vehicle");
         }
-        //TODO: What if the vehicle type doesn't exist? How should we handle that?
+
         fleet.add(vehicle);
     }
 

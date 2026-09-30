@@ -42,4 +42,17 @@ public class Booking {
     public Vehicle getVehicle() {
         return vehicle;
     }
+
+    public int getBookingId() {
+        return bookingId;
+    }
+
+    public int getBranchId() {
+        return branchId;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
 }

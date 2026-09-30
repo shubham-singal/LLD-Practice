@@ -6,17 +6,21 @@ import vehiclerentalservice.rentalstrategy.RentalStrategy;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class RentalService {
     private Map<String, Branch> branches;
     private RentalStrategy strategy;
+    Set<String> licenseIds;
 
     public RentalService(RentalStrategy strategy) {
         if(strategy == null) throw new IllegalArgumentException("Strategy cannot be null");
 
         this.branches = new HashMap<>();
         this.strategy = strategy;
+        this.licenseIds = new HashSet<>();
     }
 
     public void addBranch(String branchName) {
@@ -41,6 +45,14 @@ public class RentalService {
 
         if(vehicleId == null || vehicleId.isBlank()) {
             throw new IllegalArgumentException("Please provide valid vehicle details");
+        }
+
+        if (vehicleType == null) {
+            throw new IllegalArgumentException("Vehicle type cannot be null");
+        }
+
+        if(licenseIds.contains(vehicleId)) {
+            throw new IllegalArgumentException("Vehicle with given id already exists");
         }
 
         branchName = branchName.trim().toLowerCase();

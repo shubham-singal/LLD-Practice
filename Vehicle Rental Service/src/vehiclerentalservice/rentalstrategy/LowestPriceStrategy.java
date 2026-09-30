@@ -4,6 +4,7 @@ import vehiclerentalservice.Booking;
 import vehiclerentalservice.Branch;
 import vehiclerentalservice.Vehicle;
 import vehiclerentalservice.VehicleType;
+import vehiclerentalservice.exceptions.VehicleNotAvailableException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -19,6 +20,10 @@ public class LowestPriceStrategy implements RentalStrategy {
         double cheapestPrice = Double.MAX_VALUE;
 
         for (Branch branch : branches.values()) {
+
+            if (!branch.hasPrice(vehicleType)) {
+                continue;
+            }
 
             Vehicle vehicle = branch.findAvailableVehicle(vehicleType, startTime, endTime);
 
@@ -36,7 +41,7 @@ public class LowestPriceStrategy implements RentalStrategy {
         }
 
         if (selectedVehicle == null) {
-            throw new IllegalStateException("No vehicle available for requested time");
+            throw new VehicleNotAvailableException(vehicleType.toString());
         }
 
         long hours = Duration.between(startTime, endTime).toHours();

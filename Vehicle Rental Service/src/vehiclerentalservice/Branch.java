@@ -35,8 +35,8 @@ public class Branch {
 
 
     public void setPrice(VehicleType vehicleType, double price) {
-        if(!prices.containsKey(vehicleType)) {
-            throw new IllegalArgumentException("Vehicle Type does not exists");
+        if(vehicleType == null || price <= 0) {
+            throw new IllegalArgumentException("Please enter valid vehicle type/price");
         }
         prices.put(vehicleType, price);
     }
@@ -52,17 +52,13 @@ public class Branch {
     public Vehicle findAvailableVehicle(VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
 
         for (Vehicle vehicle : fleet) {
-
-            if (vehicle.getVehicleType() != vehicleType) {
-                continue;
-            }
-
-            if (isVehicleAvailable(vehicle, startTime, endTime)) {
+            if (vehicle.getVehicleType() == vehicleType
+                    && isVehicleAvailable(vehicle, startTime, endTime)) {
                 return vehicle;
             }
         }
 
-        throw new VehicleNotAvailableException("Currently no Vehicle of type " + vehicleType + " are available during provided time.");
+        return null;
     }
 
     private boolean isVehicleAvailable(Vehicle vehicle, LocalDateTime startTime, LocalDateTime endTime) {
@@ -84,6 +80,10 @@ public class Branch {
         bookingsByVehicle
                 .computeIfAbsent(vehicleId, key -> new ArrayList<>())
                 .add(booking);
+    }
+
+    public boolean hasPrice(VehicleType vehicleType) {
+        return prices.containsKey(vehicleType);
     }
 
     public int getBranchId() {

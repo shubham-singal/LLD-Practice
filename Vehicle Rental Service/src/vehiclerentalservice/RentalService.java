@@ -35,7 +35,7 @@ public class RentalService {
 
     public void addVehicle(String vehicleId, VehicleType vehicleType, String branchName) {
 
-        if(branchName == null || branchName.isEmpty()) {
+        if(branchName == null || branchName.isBlank()) {
             throw new IllegalArgumentException("Please provide a branch name");
         }
 
@@ -55,7 +55,7 @@ public class RentalService {
     }
 
     public void allocatePrice(String branchName, VehicleType vehicleType, double price) {
-        if(branchName == null || branchName.isEmpty()) {
+        if(branchName == null || branchName.isBlank()) {
             throw new IllegalArgumentException("Please provide a branch name");
         }
 

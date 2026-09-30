@@ -47,6 +47,22 @@ public class RentalService {
         branches.get(branchName).setPrice(vehicleType, price);
     }
 
+    public void addVehicle(
+            String vehicleId,
+            VehicleType vehicleType,
+            String branchName) {
+
+        branchName = branchName.trim().toLowerCase();
+
+        Branch branch = branches.get(branchName);
+
+        if (branch == null) {
+            throw new BranchNotFoundException(branchName);
+        }
+
+        branch.addVehicle(new Vehicle(vehicleId, vehicleType));
+    }
+
     public Booking bookVehicle(VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
         return strategy.findVehicle(branches, vehicleType, startTime, endTime);
     }

@@ -14,7 +14,6 @@ public class Branch {
     private String branchName;
     private List<Vehicle> fleet;
     private final Map<String, List<Booking>> bookingsByVehicle;
-    private List<Booking> bookings;
     private final Map<VehicleType, Double> price;
 
     public Branch(String branchName) {
@@ -35,6 +34,10 @@ public class Branch {
 
     public void setPrice(VehicleType vehicleType, double price) {
         this.price.put(vehicleType, price);
+    }
+
+    public void addVehicle(Vehicle vehicle) {
+        fleet.add(vehicle);
     }
 
     public Vehicle findAvailableVehicle(
@@ -82,7 +85,11 @@ public class Branch {
     }
 
     public void addBooking(Booking booking) {
-        bookings.add(booking);
+        String vehicleId = booking.getVehicle().getLicenseNum();
+
+        bookingsByVehicle
+                .computeIfAbsent(vehicleId, key -> new ArrayList<>())
+                .add(booking);
     }
 
     public int getBranchId() {

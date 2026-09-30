@@ -52,6 +52,10 @@ public class RentalService {
             VehicleType vehicleType,
             String branchName) {
 
+        if(branchName == null) {
+            throw new IllegalArgumentException("Branch Name cannot be null");
+        }
+
         branchName = branchName.trim().toLowerCase();
 
         Branch branch = branches.get(branchName);
@@ -64,6 +68,19 @@ public class RentalService {
     }
 
     public Booking bookVehicle(VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
+        if (vehicleType == null) {
+            throw new IllegalArgumentException("Vehicle type cannot be null");
+        }
+
+        if (startTime == null || endTime == null) {
+            throw new IllegalArgumentException("Start and end time cannot be null");
+        }
+
+        if (!startTime.isBefore(endTime)) {
+            throw new IllegalArgumentException(
+                    "Start time must be before end time"
+            );
+        }
         return strategy.findVehicle(branches, vehicleType, startTime, endTime);
     }
 

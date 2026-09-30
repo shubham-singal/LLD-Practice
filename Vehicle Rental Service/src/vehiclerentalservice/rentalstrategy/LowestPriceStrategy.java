@@ -5,6 +5,7 @@ import vehiclerentalservice.Branch;
 import vehiclerentalservice.Vehicle;
 import vehiclerentalservice.VehicleType;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -48,10 +49,13 @@ public class LowestPriceStrategy implements RentalStrategy {
             );
         }
 
+        long hours = Duration.between(startTime, endTime).toHours();
+        double totalPrice = cheapestPrice * hours;
+
         Booking booking = new Booking(
                 cheapestBranch.getBranchId(),
                 selectedVehicle,
-                cheapestPrice,
+                totalPrice,
                 startTime,
                 endTime
         );

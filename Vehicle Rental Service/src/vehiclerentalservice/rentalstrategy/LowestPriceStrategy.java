@@ -11,7 +11,7 @@ import java.util.Map;
 public class LowestPriceStrategy implements RentalStrategy {
 
     @Override
-    public VehicleSelection findVehicle(Map<String, Branch> branches, VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
+    public VehicleSelection selectVehicle(Map<String, Branch> branches, VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
 
         Branch cheapestBranch = null;
         Vehicle selectedVehicle = null;

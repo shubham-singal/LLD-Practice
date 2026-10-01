@@ -86,7 +86,7 @@ public class RentalService {
         branches.get(branchName).setPrice(vehicleType, price);
     }
 
-    public Booking bookVehicle(VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
+    public synchronized Booking bookVehicle(VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
         if (vehicleType == null) {
             throw new IllegalArgumentException("Vehicle type cannot be null");
         }
@@ -100,7 +100,7 @@ public class RentalService {
                     "Start time must be before end time"
             );
         }
-        VehicleSelection selection = strategy.findVehicle(branches, vehicleType, startTime, endTime);
+        VehicleSelection selection = strategy.selectVehicle(branches, vehicleType, startTime, endTime);
 
         long hours = Duration.between(startTime, endTime).toHours();
         double totalPrice = selection.hourlyPrice() * hours;

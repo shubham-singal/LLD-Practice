@@ -1,19 +1,17 @@
 package vehiclerentalservice.rentalstrategy;
 
-import vehiclerentalservice.Booking;
 import vehiclerentalservice.Branch;
 import vehiclerentalservice.Vehicle;
 import vehiclerentalservice.VehicleType;
 import vehiclerentalservice.exceptions.VehicleNotAvailableException;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
 
 public class LowestPriceStrategy implements RentalStrategy {
 
     @Override
-    public Booking findVehicle(Map<String, Branch> branches, VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
+    public VehicleSelection findVehicle(Map<String, Branch> branches, VehicleType vehicleType, LocalDateTime startTime, LocalDateTime endTime) {
 
         Branch cheapestBranch = null;
         Vehicle selectedVehicle = null;
@@ -44,12 +42,7 @@ public class LowestPriceStrategy implements RentalStrategy {
             throw new VehicleNotAvailableException(vehicleType.toString());
         }
 
-        long hours = Duration.between(startTime, endTime).toHours();
-        double totalPrice = cheapestPrice * hours;
 
-        Booking booking = new Booking(cheapestBranch.getBranchId(), selectedVehicle, totalPrice, startTime, endTime);
-        cheapestBranch.addBooking(booking);
-
-        return booking;
+        return new VehicleSelection(cheapestBranch, selectedVehicle, cheapestPrice);
     }
 }

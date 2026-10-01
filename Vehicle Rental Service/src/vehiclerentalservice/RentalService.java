@@ -3,7 +3,9 @@ package vehiclerentalservice;
 import vehiclerentalservice.exceptions.BranchNotFoundException;
 import vehiclerentalservice.exceptions.DuplicateBranchException;
 import vehiclerentalservice.rentalstrategy.RentalStrategy;
+import vehiclerentalservice.rentalstrategy.VehicleSelection;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -98,7 +100,15 @@ public class RentalService {
                     "Start time must be before end time"
             );
         }
-        return strategy.findVehicle(branches, vehicleType, startTime, endTime);
+        VehicleSelection selection = strategy.findVehicle(branches, vehicleType, startTime, endTime);
+
+        long hours = Duration.between(startTime, endTime).toHours();
+        double totalPrice = selection.hourlyPrice() * hours;
+
+        Booking booking = new Booking(selection.branch().getBranchId(), selection.vehicle(), totalPrice, startTime, endTime);
+        selection.branch().addBooking(booking);
+
+        return booking;
     }
 
     public void setRentalStrategy(RentalStrategy strategy) {

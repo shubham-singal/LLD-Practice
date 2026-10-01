@@ -10,6 +10,11 @@ import vehiclerentalservice.rentalstrategy.RentalStrategy;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 
@@ -59,6 +64,72 @@ public class RentalServiceTest {
     public void testDuplicateBranchException() {
         rentalService.addBranch("Vasanth Vihar");
         rentalService.addBranch("Vasanth Vihar");
+    }
+
+    @Test
+    public void testConcurrentBookingSameVehicle() throws InterruptedException {
+        rentalService.addBranch("Vasanth Vihar");
+        rentalService.addVehicle(
+                "DL 101",
+                VehicleType.Sedan,
+                "Vasanth Vihar"
+        );
+        rentalService.allocatePrice(
+                "Vasanth Vihar",
+                VehicleType.Sedan,
+                50.00
+        );
+
+        LocalDateTime startTime =
+                LocalDateTime.of(2026, Month.OCTOBER, 21, 15, 0);
+
+        LocalDateTime endTime =
+                LocalDateTime.of(2026, Month.OCTOBER, 21, 19, 0);
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+        CountDownLatch ready = new CountDownLatch(2);
+        CountDownLatch start = new CountDownLatch(1);
+
+        AtomicInteger successfulBookings = new AtomicInteger();
+        AtomicInteger failedBookings = new AtomicInteger();
+
+        Runnable bookingTask = () -> {
+            try {
+                ready.countDown();
+
+                start.await();
+
+                rentalService.bookVehicle(
+                        VehicleType.Sedan,
+                        startTime,
+                        endTime
+                );
+
+                successfulBookings.incrementAndGet();
+
+            } catch (VehicleNotAvailableException e) {
+                failedBookings.incrementAndGet();
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        };
+
+        executor.submit(bookingTask);
+        executor.submit(bookingTask);
+
+        // Wait until both threads are ready
+        ready.await();
+
+        // Release both threads at roughly the same time
+        start.countDown();
+
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+
+        assertEquals(1, successfulBookings.get());
+        assertEquals(1, failedBookings.get());
     }
 
 

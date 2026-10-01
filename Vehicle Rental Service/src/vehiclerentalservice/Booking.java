@@ -4,25 +4,17 @@ import java.time.LocalDateTime;
 
 public class Booking {
     private static int count = 0;
-    private int bookingId;
 
-    private int branchId;
-
-    private Vehicle vehicle;
-
+    private final int bookingId;
+    private final int branchId;
+    private final Vehicle vehicle;
     private double totalPrice;
-
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
     //Discount discount
 
-    public Booking(
-            int branchId,
-            Vehicle vehicle,
-            double totalPrice,
-            LocalDateTime startTime,
-            LocalDateTime endTime) {
+    public Booking(int branchId, Vehicle vehicle, double totalPrice, LocalDateTime startTime, LocalDateTime endTime) {
 
         this.bookingId = ++count;
         this.branchId = branchId;

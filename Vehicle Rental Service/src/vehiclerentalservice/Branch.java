@@ -12,14 +12,12 @@ public class Branch {
     private static int count = 0;
 
     private final int branchId;
-    private String branchName;
     private List<Vehicle> fleet;
     private final Map<String, List<Booking>> bookingsByVehicle;
     private final Map<VehicleType, Double> prices;
 
-    public Branch(String branchName) {
+    public Branch() {
         this.branchId = ++Branch.count;
-        this.branchName = branchName;
         fleet = new ArrayList<>();
         bookingsByVehicle = new HashMap<>();
         prices = new HashMap<>();

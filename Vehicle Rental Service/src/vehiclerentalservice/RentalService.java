@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class RentalService {
-    private Map<String, Branch> branches;
+    private final Map<String, Branch> branches;
     private RentalStrategy strategy;
-    Set<String> licenseIds;
+    private final Set<String> licenseIds;
 
     public RentalService(RentalStrategy strategy) {
         if(strategy == null) throw new IllegalArgumentException("Strategy cannot be null");
@@ -32,7 +32,7 @@ public class RentalService {
         if(branches.containsKey(branchName)) {
             throw new DuplicateBranchException(branchName);
         }
-        Branch br = new Branch(branchName);
+        Branch br = new Branch();
         branches.put(branchName, br);
     }
 
@@ -51,7 +51,9 @@ public class RentalService {
             throw new IllegalArgumentException("Vehicle type cannot be null");
         }
 
-        if(licenseIds.contains(vehicleId)) {
+        vehicleId = vehicleId.trim();
+
+        if (licenseIds.contains(vehicleId)) {
             throw new IllegalArgumentException("Vehicle with given id already exists");
         }
 
@@ -64,6 +66,7 @@ public class RentalService {
         }
 
         branch.addVehicle(new Vehicle(vehicleId, vehicleType));
+        licenseIds.add(vehicleId);
     }
 
     public void allocatePrice(String branchName, VehicleType vehicleType, double price) {
@@ -104,5 +107,4 @@ public class RentalService {
         this.strategy = strategy;
     }
 
-    //TODO: Refactor branch validation: P4
 }

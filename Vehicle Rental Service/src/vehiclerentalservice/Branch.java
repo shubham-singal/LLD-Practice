@@ -12,7 +12,7 @@ public class Branch {
     private static int count = 0;
 
     private final int branchId;
-    private List<Vehicle> fleet;
+    private final List<Vehicle>  fleet;
     private final Map<String, List<Booking>> bookingsByVehicle;
     private final Map<VehicleType, Double> prices;
 
@@ -69,6 +69,25 @@ public class Branch {
         }
 
         return true;
+    }
+
+    public Map<VehicleType, VehicleInventory> getInventory(LocalDateTime startTime, LocalDateTime endTime) {
+
+        Map<VehicleType, VehicleInventory> vehicleInventory = new HashMap<>();
+        for(Vehicle vehicle : fleet) {
+            VehicleType vt = vehicle.getVehicleType();
+
+            if(!vehicleInventory.containsKey(vt)) {
+                vehicleInventory.put(vt, new VehicleInventory(new ArrayList<>(), new ArrayList<>()));
+            }
+            if(isVehicleAvailable(vehicle, startTime, endTime)) {
+                vehicleInventory.get(vt).available().add(vehicle);
+            } else {
+                vehicleInventory.get(vt).unavailable().add(vehicle);
+            }
+        }
+
+        return  vehicleInventory;
     }
 
     public void addBooking(Booking booking) {

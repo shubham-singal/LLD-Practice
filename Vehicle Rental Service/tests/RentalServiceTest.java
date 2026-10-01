@@ -57,7 +57,9 @@ public class RentalServiceTest {
         rentalService.allocatePrice("Vasanth Vihar", VehicleType.Sedan, 50.00);
         Booking booking = rentalService.bookVehicle(VehicleType.Sedan, LocalDateTime.of(2026, Month.OCTOBER, 21, 15, 0, 0), LocalDateTime.of(2026, Month.OCTOBER, 21, 19, 0, 0));
 
-        Booking booking2 = rentalService.bookVehicle(VehicleType.Sedan, LocalDateTime.of(2026, Month.OCTOBER, 21, 10, 0, 0), LocalDateTime.of(2026, Month.OCTOBER, 21, 15   , 0, 0));
+        Booking booking2 = rentalService.bookVehicle(VehicleType.Sedan, LocalDateTime.of(2026, Month.OCTOBER, 21, 10, 0, 0), LocalDateTime.of(2026, Month.OCTOBER, 21, 15, 0, 0));
+
+        System.out.println(rentalService.viewVehicleInventory(LocalDateTime.of(2026, Month.OCTOBER, 11, 10, 0, 0), LocalDateTime.of(2026, Month.OCTOBER, 11, 15, 0, 0)));
     }
 
     @Test(expected = DuplicateBranchException.class)

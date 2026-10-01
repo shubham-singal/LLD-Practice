@@ -7,10 +7,7 @@ import vehiclerentalservice.rentalstrategy.VehicleSelection;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class RentalService {
     private final Map<String, Branch> branches;
@@ -109,6 +106,30 @@ public class RentalService {
         selection.branch().addBooking(booking);
 
         return booking;
+    }
+
+    public Map<VehicleType, VehicleInventory> viewVehicleInventory(LocalDateTime startTime, LocalDateTime endTime) {
+        Map<VehicleType, VehicleInventory> snapshot = new HashMap<>();
+        for(Branch branch : branches.values()) {
+            Map<VehicleType, VehicleInventory> branchInventory = branch.getInventory(startTime, endTime);
+
+            for(Map.Entry<VehicleType, VehicleInventory> entry : branchInventory.entrySet()) {
+                VehicleType key = entry.getKey();
+                if(!snapshot.containsKey(key)) {
+                    snapshot.put(key, new VehicleInventory(new ArrayList<>(entry.getValue().available()), new ArrayList<>(entry.getValue().unavailable())));
+                } else {
+                    List<Vehicle> totalAvailable = snapshot.get(key).available();
+                    List<Vehicle> branchAvailable = entry.getValue().available();
+                    totalAvailable.addAll(branchAvailable);
+
+                    List<Vehicle> totalUnavailable = snapshot.get(key).unavailable();
+                    List<Vehicle> branchUnAvailable = entry.getValue().unavailable();
+                    totalUnavailable.addAll(branchUnAvailable);
+                }
+            }
+        }
+
+        return snapshot;
     }
 
     public void setRentalStrategy(RentalStrategy strategy) {
